@@ -32,3 +32,23 @@
 
 - 如果被除数和除数的符号相同，商为整数，否则商为负数
 - 余数的符号始终和被除数相同
+
+
+### 有符号数的符号扩展指令
+1. cbw convert byte to word 将AL中的有符号数扩展到AX，若AL=Fd(-3)，则扩展后，AX=FFFD(-1)
+2. cwde convert word to extended double 将AX中的有符号数扩展到EAX，若AX=FFFD(-1)，则扩展后，EAX=FFFF FFFD(-3)
+3. cdqe convert double_word to quad 将EAX中的有符号数扩展到RAX，若EAX=FFFF FFFD(-3)，则扩展后，RAX=FFFFFFFF FFFFFFFD(-3)
+4. cwd convert word to double_wrod  将AX中的有符号数扩展到DX:AX，若AX=FFFD(-3)，则扩展后，DX=FFFF，AX=FFFD
+5. cdq convert double_word to quad 将EAX中的有符号数扩展到EDX:EAX，若EAX=FFFFFFFD(-3)，则扩展后，EDX=FFFF FFFF，EAX=FFFF FFFD
+6. cdo 将RAX中的有符号数扩展到RDX:RAX，若RAX=FFFFFFFF FFFFFFFD，则扩展后，RDX=FFFF FFFF，RDX=FFFF FFFD 
+7. 以下是一个cwd的小栗子
+
+
+    ```asm
+    mov ax,-6002
+    cwd
+    mov bx,-10
+    idiv bx
+    times 510-($-$$) db 0
+    db 0x55,0xaa
+    ```
