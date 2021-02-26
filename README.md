@@ -71,3 +71,33 @@
 - mov/movs 这类指令不影响任何标志位
 - neg 如果操作数为0，则CF=0，否则CF=1；对OF SF ZF AF和PF的影响依计算结果而定
 - xor OF=0，CF=0；对SF ZF和PF依计算结果而定，对AF的影响未定义
+
+### 条件转移指令和CMP指令
+- js 符号标志SF为1则转移
+- jns 符号标志SF不为1(为0)时转移
+- jz 零标志ZF为1则转移
+- jnz 零标志ZF不为1(为0)时转移
+- jo 移除标志OF为1则转移
+- jno 溢出标志OF不为1(为0)时转移
+- jc 进位标志CF为1则转移
+- jnc 进位标志CF不为1(为0)则转移
+- jp 奇偶标志PF为1则转移
+- jnp 奇偶标志PF不为1(为0)时转移
+
+### cmp指令栗子
+- 具体看 受CMP指令执行结果影响的条件转移指令及其依赖的标志位状态.pdf
+- 该指令执行后，会影响标志寄存器CF OF SF ZF AF PF
+
+
+        ```
+        ;比较dh和0，如果dh小于0就转移到negb
+        cmp dh 0
+        jl negb
+
+
+        ;比较dh和0x80，如果dh大于或者等于0x80就转移到negb
+        cmp dh,0x80
+        ;jae:jump if above or qual
+        jae negb
+        ```
+- jcxz(iump if CX is zero)，当CX寄存器为0时转移，例如 jcxz show 

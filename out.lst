@@ -1,13 +1,10 @@
-     1 00000000 EB03                        jmp start
-     2 00000002 FF                      data1 db -1
-     3 00000003 E7FF                    data2 dw -25
-     4                                  start:
-     5 00000005 BA0100                      mov dx,0x01
-     6 00000008 B80000                      mov ax,0
-     7                                      ;sub的两个操作数不能同时为内存地址
-     8 0000000B 29D0                        sub ax,dx 
-     9                                      ;neg是用0减去后面制定的内容再返回这个容器中
-    10 0000000D F7DA                        neg dx;
-    11                                      
-    12 0000000F 00<rep 1EFh>                times 510-($-$$) db 0
-    13 000001FE 55AA                    db 0x55,0xaa
+     1 00000000 31C0                    xor ax,ax
+     2 00000002 B90400                  mov cx,4
+     3                                  delay:
+     4 00000005 40                          inc ax
+     5 00000006 E2FD                        loop delay
+     6                                  
+     7 00000008 EBFE                        jmp $
+     8 0000000A 00<rep 1F4h>                times 510-($-$$) db 0
+     9                                  
+    10 000001FE 55AA                    db 0x55,0xaa
