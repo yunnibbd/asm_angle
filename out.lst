@@ -1,10 +1,63 @@
-     1 00000000 31C0                    xor ax,ax
-     2 00000002 B90400                  mov cx,4
-     3                                  delay:
-     4 00000005 40                          inc ax
-     5 00000006 E2FD                        loop delay
+     1 00000000 EB10                        jmp start
+     2 00000002 312B322B332B2E2E2E-     message db "1+2+3+...+100 = "
+     2 0000000B 2B313030203D20     
+     3                                  start:
+     4 00000012 B8C007                      mov ax,0x7c0
+     5 00000015 8ED8                        mov ds,ax
      6                                  
-     7 00000008 EBFE                        jmp $
-     8 0000000A 00<rep 1F4h>                times 510-($-$$) db 0
+     7 00000017 B800B8                      mov ax,0xb800
+     8 0000001A 8EC0                        mov es,ax
      9                                  
-    10 000001FE 55AA                    db 0x55,0xaa
+    10 0000001C BE[0200]                    mov si,message
+    11 0000001F 31FF                        xor di,di
+    12                                  
+    13 00000021 B91000                      mov cx,start-message
+    14                                      ;显示提示信息
+    15                                  show_message:
+    16 00000024 8A04                        mov al,[si]
+    17 00000026 268805                      mov [es:di],al
+    18 00000029 47                          inc di
+    19 0000002A 26C60507                    mov byte [es:di],0x07
+    20 0000002E 47                          inc di
+    21 0000002F 46                          inc si
+    22 00000030 E2F2                        loop show_message 
+    23                                  
+    24                                      ;计算累加100
+    25 00000032 31C0                        xor ax,ax
+    26 00000034 B90100                      mov cx,1
+    27                                  summate:
+    28 00000037 01C8                        add ax,cx
+    29 00000039 41                          inc cx
+    30 0000003A 83F964                      cmp cx,100
+    31 0000003D 7EF8                        jle summate
+    32                                  
+    33                                      ;将累加结果在屏幕上
+    34                                      ;使用栈来存储和取出数位
+    35 0000003F BB0A00                      mov bx,10
+    36 00000042 31C9                        xor cx,cx
+    37 00000044 8ED1                        mov ss,cx
+    38 00000046 89CC                        mov sp,cx
+    39                                  resolver_num:
+    40 00000048 31D2                        xor dx,dx
+    41 0000004A F7F3                        div bx
+    42 0000004C 80C230                      add dl,0x30 ;转化为字符数字
+    43 0000004F 52                          push dx
+    44 00000050 41                          inc cx ;每次分解数位的次数会累计在cx中，作为显示数位循环的次数
+    45 00000051 83F800                      cmp ax,0
+    46 00000054 75F2                        jne resolver_num 
+    47                                      ;寄存器汇总存储的5050是使用16进制13ba存储，每次分解掉一次数位，直至ax
+    48                                      ;寄存器中全部变为0则停止分解
+    49                                      
+    50                                  show_num:
+    51 00000056 5A                          pop dx
+    52 00000057 268815                      mov [es:di],dl
+    53 0000005A 47                          inc di
+    54 0000005B 26C60507                    mov byte [es:di],0x07
+    55 0000005F 47                          inc di
+    56 00000060 E2F4                        loop show_num
+    57                                  
+    58 00000062 EBFE                        jmp $
+    59                                  
+    60 00000064 00<rep 19Ah>            buffer times 510-($-$$) db 0
+    61 000001FE 55AA                        db 0x55,0xaa
+    62                                  
